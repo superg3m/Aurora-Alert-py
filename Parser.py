@@ -22,7 +22,23 @@ class Parser:
         }
 
         self.__parse_report()
-        self.__calculate_and_print_report()
+        self.__calculate_report()
+
+    def re_parse(self, lines):
+        self.__lines = lines
+        self.__data_range = []
+        self.__date_time_KP = []
+
+        self.__parse_dates()
+
+        self.__report = {
+            "dates": [self.__data_range[0], self.__data_range[1], self.__data_range[2]],
+            "KP": [[], [], []]
+        }
+
+        self.__parse_report()
+        self.__calculate_report()
+
 
     def find_best_time_per_day(self):
         best = {self.__data_range[0]: [],
@@ -34,18 +50,19 @@ class Parser:
             print(arr)
             best.get(date).append(KP)
 
-    def __calculate_and_print_report(self):
+    def __calculate_report(self):
         for i, KPArr in enumerate(self.__report.get('KP')):
             for j, KP in enumerate(KPArr):
                 if float(KP) >= kp_thresh_hold:
                     self.__date_time_KP.append(
                         (self.__report.get('dates')[i], time_converter.get_est(utc_hours[j]), float(KP)))
-                    print(
-                        f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est(utc_hours[j])}")
+                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est(utc_hours[j])}")
                 else:
-                    print(
-                        f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | KP: {KP} | {time_converter.get_est(utc_hours[j])}")
-            print()
+                    """
+                    Yes
+                    """
+                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | KP: {KP} | {time_converter.get_est(utc_hours[j])}")
+            #print()
 
     def get_date_ranges(self):
         return self.__data_range

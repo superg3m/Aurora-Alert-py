@@ -41,25 +41,34 @@ class MyDiscordBot:
         guild = self.bot.get_guild(guild_id)
         channel = discord.utils.get(guild.channels, name='aurora-alert')
         role = discord.utils.get(guild.roles, name="Aurora Alerts")
-        msg = f"<@&{role.id}> \n Go see the northern lights on ``{parser.get_date_time_KP()[0][0]}`` at ``{parser.get_date_time_KP()[0][1]}``"
+
+        msg = f"<@&{role.id}> \n Go see the northern lights on \n"
+
+        for my_tuple in parser.get_date_time_KP():
+            my_date, my_time, my_kp = my_tuple
+            msg += f"``{my_date}`` at ``{my_time}`` | ``kp index: {my_kp}`` \n"
 
         next_target_datetime = None
+
         message_sent_today = False
+
         while True:
             # Use EST timezone for 'now'
             est_timezone = pytz.timezone("US/Eastern")
             now = datetime.datetime.now(est_timezone)
-            target_time = time(7, 00)  # 5:35 PM (You can customize this per guild if needed)
+            target_time = time(10, 00)  # 10:00 AM (You can customize this per guild if needed)
             target_datetime = now.replace(hour=target_time.hour, minute=target_time.minute)
 
             if now >= target_datetime and not message_sent_today:
-                if channel:
+                if channel and len(parser.get_date_time_KP()) > 1:
                     embedVar = discord.Embed(title="Aurora Alert", description=msg, color=0x00CCFF)
                     # select random url in a list and then set the image to that one
                     embedVar.set_image(
                         url="https://www.mtu.edu/tour/copper-country/northern-lights/images/northern-lights-michigan-tech-1600feature.jpg")
                     await channel.send(embed=embedVar)
                     print(f"Sending Alert to {guild.name}")
+                    message_sent_today = True
+                else:
                     message_sent_today = True
                 next_target_datetime = target_datetime + datetime.timedelta(days=1)
 
@@ -76,7 +85,7 @@ class MyDiscordBot:
                 await asyncio.sleep(sleep_duration)
 
             if now.date() != next_target_datetime.date():
-                print(f"New message is able to be sent in  {guild.name}")
+                print(f"New message is able to be sent in {guild.name}")
                 message_sent_today = False
 
     def run(self):
