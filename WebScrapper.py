@@ -1,5 +1,5 @@
 import requests
-from colorama import Fore
+
 from TimeConverter import TimeConverter
 
 time_converter = TimeConverter()

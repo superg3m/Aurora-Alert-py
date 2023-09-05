@@ -1,10 +1,11 @@
+import datetime
 from datetime import time
+import asyncio
+import discord
+import pytz  # Import pytz
 
 from WebScrapper import WebScrapper
 from Parser import Parser
-import asyncio
-import datetime
-import discord
 
 web_scrapper = WebScrapper("https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt")
 parser = Parser(web_scrapper.get_lines())
@@ -12,7 +13,7 @@ parser = Parser(web_scrapper.get_lines())
 
 class MyDiscordBot:
     def __init__(self, bot_token):
-
+        # im thinking about doing instance based instances lmaooooooooo
         self.bot_token = bot_token
         self.bot = None
         self.tasks = {}
@@ -23,6 +24,12 @@ class MyDiscordBot:
     async def on_message(self, message):
         if message.author == self.bot.user:
             return
+
+        if message.content.startswith('$uptime'):
+            guild_id = message.guild.id
+            guild = self.bot.get_guild(guild_id)
+            channel = discord.utils.get(guild.channels, name='aurora-alert')
+            await channel.send("I'm still working don't worry!")
 
         if message.guild:
             guild_id = message.guild.id
@@ -39,15 +46,18 @@ class MyDiscordBot:
         next_target_datetime = None
         message_sent_today = False
         while True:
-            now = datetime.datetime.now()
-            target_time = time(19, 45)  # 5:35 PM (You can customize this per guild if needed)
+            # Use EST timezone for 'now'
+            est_timezone = pytz.timezone("US/Eastern")
+            now = datetime.datetime.now(est_timezone)
+            target_time = time(7, 00)  # 5:35 PM (You can customize this per guild if needed)
             target_datetime = now.replace(hour=target_time.hour, minute=target_time.minute)
 
             if now >= target_datetime and not message_sent_today:
                 if channel:
                     embedVar = discord.Embed(title="Aurora Alert", description=msg, color=0x00CCFF)
                     # select random url in a list and then set the image to that one
-                    embedVar.set_image(url="https://www.mtu.edu/tour/copper-country/northern-lights/images/northern-lights-michigan-tech-1600feature.jpg")
+                    embedVar.set_image(
+                        url="https://www.mtu.edu/tour/copper-country/northern-lights/images/northern-lights-michigan-tech-1600feature.jpg")
                     await channel.send(embed=embedVar)
                     print(f"Sending Alert to {guild.name}")
                     message_sent_today = True
@@ -66,6 +76,7 @@ class MyDiscordBot:
                 await asyncio.sleep(sleep_duration)
 
             if now.date() != next_target_datetime.date():
+                print(f"New message is able to be sent in  {guild.name}")
                 message_sent_today = False
 
     def run(self):
