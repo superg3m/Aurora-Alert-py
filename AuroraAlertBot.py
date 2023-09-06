@@ -15,7 +15,7 @@ URLS = [
     "https://www.mtu.edu/tour/copper-country/northern-lights/images/northern-lights-michigan-tech-1600feature.jpg"
 ]
 
-reading_message_thread = True
+RESPONSE_NUMBER = 0
 
 class STATUS(Enum):
     Idle_Status = -1
@@ -56,42 +56,6 @@ class AuroraAlert:
             if guild.id not in self.guild_settings:
                 self.init_guild_settings(guild)
 
-    async def on_message(self, message):
-        if message.author == self.bot.user:
-            return
-
-        global reading_message_thread
-
-        print(message.content)
-
-        if not reading_message_thread:
-            if message.content.startswith('$uptime'):
-                await message.channel.send("I'm still working don't worry!")
-
-            if message.content.startswith('$target_time'):
-                guild_id = message.guild.id
-                channel = self.guild_settings[guild_id]['channel_instance']
-                await channel.send('Remember this is a 24 hour clock ex: time(16, 30) is 4:30pm')
-
-                tempSTR = message.content.replace('$target_time', '')
-                tempSTR = tempSTR.replace('time(', '')
-                tempSTR = tempSTR.replace(')', '')
-                tempSTR = tempSTR.split(', ')
-
-                self.guild_settings[guild_id]['target_time'] = time(int(tempSTR[0]), int(tempSTR[1]))
-                await channel.send('Successfully updated the target time!')
-
-            if message.content.startswith('channel_name'):
-                guild_id = message.guild.id
-                channel = self.guild_settings[guild_id]['channel_name']
-                await channel.send('Default is aurora-alert')
-
-                tempSTR = message.content.replace('$channel_name ')
-
-                self.guild_settings[guild_id]['channel_name'] = time(int(tempSTR[0]), int(tempSTR[1]))
-                await channel.send('Successfully updated the channel name!')
-            reading_message_thread = True
-
     def init_guild_settings(self, guild):
         role = discord.utils.get(guild.roles, name="Aurora Alerts")
         channel = discord.utils.get(guild.channels, name='aurora-alert')
@@ -106,6 +70,58 @@ class AuroraAlert:
             'channel_instance': channel,
             'guild_instance': guild
         }
+
+    async def on_message(self, message):
+        if message.author == self.bot.user:
+            return
+
+        # Check if the message is from a specific guild by comparing guild ID
+        global RESPONSE_NUMBER
+        if RESPONSE_NUMBER == 0:
+            if message.content.startswith('$uptime'):
+                RESPONSE_NUMBER += 1
+                await message.channel.send("I'm still working don't worry!")
+                RESPONSE_NUMBER -= 1
+
+            if message.content.startswith('$target_time'):
+                RESPONSE_NUMBER += 1
+                await self.target_time_command(message)
+                RESPONSE_NUMBER -= 1
+
+            if message.content.startswith('$channel_name'):
+                RESPONSE_NUMBER += 1
+                await self.channel_name_command(message)
+                RESPONSE_NUMBER -= 1
+
+    async def uptime_command(self, message):
+        """
+
+        :param message:
+        :return:
+        """
+
+    async def target_time_command(self, message):
+        guild_id = message.guild.id
+        channel = self.guild_settings[guild_id]['channel_instance']
+        await channel.send('Remember this is a 24 hour clock ex: time(16, 30) is 4:30pm')
+
+        tempSTR = message.content.replace('$target_time', '')
+        tempSTR = tempSTR.replace('time(', '')
+        tempSTR = tempSTR.replace(')', '')
+        tempSTR = tempSTR.split(', ')
+
+        self.guild_settings[guild_id]['target_time'] = time(int(tempSTR[0]), int(tempSTR[1]))
+        await channel.send('Successfully updated the target time!')
+
+    async def channel_name_command(self, message):
+        guild_id = message.guild.id
+        channel = self.guild_settings[guild_id]['channel_name']
+        await channel.send('Default is aurora-alert')
+
+        tempSTR = message.content.replace('$channel_name ')
+
+        self.guild_settings[guild_id]['channel_name'] = time(int(tempSTR[0]), int(tempSTR[1]))
+        await channel.send('Successfully updated the channel name!')
 
     async def send_message_to_guild(self, guild_id, message):
         settings = self.guild_settings.get(guild_id)
@@ -151,12 +167,14 @@ class AuroraAlert:
             settings['message_sent'] = False
             web_scrapper.re_scrap(url_scrap)
             parser.re_parse(web_scrapper.get_lines())
+            print(f"new data is here!")
 
         return True
 
     async def check_scheduled_tasks(self, guild_id):
         while True:
-            if guild_id in self.guild_settings:
+            # and guild_id != 1141878631002546231 and guild_id != 1147262863921135768
+            if guild_id in self.guild_settings and guild_id != 1141878631002546231 and guild_id != 1147262863921135768:
                 await self.send_message_to_guild(guild_id, "Your scheduled message here")
             await asyncio.sleep(30)  # Check every minute
 

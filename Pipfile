@@ -8,9 +8,6 @@ requests = "*"
 colorama = "*"
 discord.py = "*"
 pytz = "*"
-random = "*"
-enum = "*"
-datetime = "*"
 
 [dev-packages]
 # Add your development dependencies here, if any.

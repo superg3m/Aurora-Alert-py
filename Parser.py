@@ -4,7 +4,8 @@ from TimeConverter import TimeConverter
 time_converter = TimeConverter()
 lookup_keys = ["00-03UT", "03-06UT", "06-09UT", "09-12UT", "12-15UT", "15-18UT", "18-21UT", "21-00UT"]
 utc_hours = [0, 3, 6, 9, 12, 15, 18, 21]
-kp_thresh_hold = 3.0
+kp_thresh_hold = 4.67
+
 
 # fix the time
 
@@ -39,7 +40,6 @@ class Parser:
         self.__parse_report()
         self.__calculate_report()
 
-
     def find_best_time_per_day(self):
         best = {self.__data_range[0]: [],
                 self.__data_range[1]: [],
@@ -53,23 +53,24 @@ class Parser:
     def __calculate_report(self):
         for i, KPArr in enumerate(self.__report.get('KP')):
             for j, KP in enumerate(KPArr):
-                if float(KP) >= kp_thresh_hold:
+                est_24_hour = TimeConverter.utc_to_est_24(utc_hours[j])
+                if float(KP) >= kp_thresh_hold and est_24_hour >= 7 and est_24_hour >= 19:
+                    # print(f"24 hour: {est_24_hour}")
                     self.__date_time_KP.append(
-                        (self.__report.get('dates')[i], time_converter.get_est(utc_hours[j]), float(KP)))
-                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est(utc_hours[j])}")
+                        (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
+                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est_format(utc_hours[j])}")
                 else:
                     """
                     Yes
                     """
                     # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | KP: {KP} | {time_converter.get_est(utc_hours[j])}")
-            #print()
+            # print()
 
     def get_date_ranges(self):
         return self.__data_range
 
     def get_date_time_KP(self):
         return self.__date_time_KP
-
 
     def get_pings(self):
         # print(f"Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est(utc_hours[j])}")
