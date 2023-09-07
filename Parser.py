@@ -1,13 +1,24 @@
+import re
+
 from colorama import Fore
 from TimeConverter import TimeConverter
 
 time_converter = TimeConverter()
 lookup_keys = ["00-03UT", "03-06UT", "06-09UT", "09-12UT", "12-15UT", "15-18UT", "18-21UT", "21-00UT"]
 utc_hours = [0, 3, 6, 9, 12, 15, 18, 21]
-kp_thresh_hold = 4.67
+kp_thresh_hold = 5.00
 
 
 # fix the time
+def remove_inside_and_parentheses(input_string):
+    # Define a regular expression pattern to match text within parentheses and the parentheses themselves
+    pattern = r'\([^)]*\)'
+
+    # Use re.sub to replace matched patterns with an empty string
+    result = re.sub(pattern, '', input_string)
+
+    return result
+
 
 class Parser:
     def __init__(self, lines):
@@ -92,6 +103,7 @@ class Parser:
             for i in range(len(lookup_keys)):
                 if lookup_keys[i] in line:
                     line = line.replace(lookup_keys[i], "")
+                    line = remove_inside_and_parentheses(line)
                     line = " ".join(line.split())
                     indexes = line.split(" ")
                     self.__report.get("KP")[0].append(indexes[0])

@@ -141,6 +141,9 @@ class AuroraAlert:
             settings['message_sent'] = True
             await channel.send(embed=embedVar)
             print(f"Sending Alert to {guild.name}")
+            web_scrapper.re_scrap(url_scrap)
+            parser.re_parse(web_scrapper.get_lines())
+            print(f"new data is here!")
 
     def trigger_timer(self, settings):
         # Use EST timezone for 'now'
@@ -153,24 +156,22 @@ class AuroraAlert:
         settings['sleep_duration'] = sleep_duration  # sleep for 2 days
         if now < target_datetime:
             return False
+
         return True
 
     async def message_timer(self, settings):
-
         while self.trigger_timer(settings) is False:
             await asyncio.sleep(30)
         if settings['message_sent'] is True:
             await asyncio.sleep(settings['sleep_duration'])
             settings['message_sent'] = False
-            web_scrapper.re_scrap(url_scrap)
-            parser.re_parse(web_scrapper.get_lines())
-            print(f"new data is here!")
+
         return True
 
     async def check_scheduled_tasks(self, guild_id):
         while True:
             # and guild_id != 1141878631002546231 and guild_id != 1147262863921135768
-            if guild_id in self.guild_settings:
+            if guild_id in self.guild_settings and guild_id != 1141878631002546231 and guild_id != 1147262863921135768:
                 await self.send_message_to_guild(guild_id, "Your scheduled message here")
             await asyncio.sleep(30)  # Check every minute
 
