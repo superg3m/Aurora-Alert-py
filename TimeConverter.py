@@ -1,3 +1,7 @@
+import datetime
+import pytz
+
+
 class TimeConverter:
     @staticmethod
     def utc_to_est_12hr_am_pm(utc_hour):
@@ -15,6 +19,11 @@ class TimeConverter:
             am_pm = "PM"
         if est_hour == 0:
             est_hour = 12
+
+        TIME_ZONE = pytz.timezone('US/Eastern')
+        current_time_est = datetime.datetime.now(TIME_ZONE)
+        is_dst = current_time_est.dst()
+        est_hour = est_hour + int(is_dst.seconds / 3600)
 
         # Return formatted time
         return f"{est_hour:02d}:00 {am_pm}"
@@ -35,6 +44,11 @@ class TimeConverter:
         # Special case for midnight
         if est_hour == 0:
             est_hour = 12
+
+        TIME_ZONE = pytz.timezone('US/Eastern')
+        current_time_est = datetime.datetime.now(TIME_ZONE)
+        is_dst = current_time_est.dst()
+        est_hour = est_hour + int(is_dst.seconds / 3600)
 
         # Return formatted time
         return est_hour

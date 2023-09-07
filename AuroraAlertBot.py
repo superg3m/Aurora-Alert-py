@@ -15,7 +15,8 @@ URLS = [
     "https://www.mtu.edu/tour/copper-country/northern-lights/images/northern-lights-michigan-tech-1600feature.jpg"
 ]
 
-RESPONSE_NUMBER = 0
+Reading_Message_Thread = False
+
 
 class STATUS(Enum):
     Idle_Status = -1
@@ -65,7 +66,7 @@ class AuroraAlert:
             'sleep_duration': 0,
             'schedule_loop': asyncio.create_task(self.check_scheduled_tasks(guild.id)),
             'channel_name': 'aurora-alert',
-            'target_time': time(7, 00),
+            'target_time': time(13, 00),
             'role_instance': role,
             'channel_instance': channel,
             'guild_instance': guild
@@ -76,26 +77,24 @@ class AuroraAlert:
             return
 
         # Check if the message is from a specific guild by comparing guild ID
-        global RESPONSE_NUMBER
-        if RESPONSE_NUMBER == 0:
+        global Reading_Message_Thread
+        if not Reading_Message_Thread:
             if message.content.startswith('$uptime'):
-                RESPONSE_NUMBER += 1
+                Reading_Message_Thread = True
                 await message.channel.send("I'm still working don't worry!")
-                RESPONSE_NUMBER -= 1
 
             if message.content.startswith('$target_time'):
-                RESPONSE_NUMBER += 1
+                Reading_Message_Thread = True
                 await self.target_time_command(message)
-                RESPONSE_NUMBER -= 1
 
             if message.content.startswith('$channel_name'):
-                RESPONSE_NUMBER += 1
+                Reading_Message_Thread = True
                 await self.channel_name_command(message)
-                RESPONSE_NUMBER -= 1
+
+            Reading_Message_Thread = False
 
     async def uptime_command(self, message):
         """
-
         :param message:
         :return:
         """
@@ -132,7 +131,7 @@ class AuroraAlert:
 
             for my_tuple in parser.get_date_time_KP():
                 my_date, my_time, my_kp = my_tuple
-                msg += f"``{my_date}`` at ``{my_time}`` | ``kp index: {my_kp}`` \n"
+                msg += f"``{my_date}`` at ``{my_time}``, ``kp-index: {my_kp}`` \n"
 
             channel = settings['channel_instance']
             embedVar = discord.Embed(title="Aurora Alert", description=msg, color=0x00CCFF)
@@ -149,32 +148,29 @@ class AuroraAlert:
         now = datetime.datetime.now(est_timezone)
         target_time = settings['target_time']
         target_datetime = now.replace(hour=target_time.hour, minute=target_time.minute)
-        next_target_datetime = target_datetime + datetime.timedelta(days=1)
+        next_target_datetime = target_datetime + datetime.timedelta(days=2)
         sleep_duration = (next_target_datetime - now).total_seconds()
-        settings['sleep_duration'] = sleep_duration
+        settings['sleep_duration'] = sleep_duration  # sleep for 2 days
         if now < target_datetime:
             return False
-
         return True
 
     async def message_timer(self, settings):
 
         while self.trigger_timer(settings) is False:
             await asyncio.sleep(30)
-
         if settings['message_sent'] is True:
             await asyncio.sleep(settings['sleep_duration'])
             settings['message_sent'] = False
             web_scrapper.re_scrap(url_scrap)
             parser.re_parse(web_scrapper.get_lines())
             print(f"new data is here!")
-
         return True
 
     async def check_scheduled_tasks(self, guild_id):
         while True:
             # and guild_id != 1141878631002546231 and guild_id != 1147262863921135768
-            if guild_id in self.guild_settings and guild_id != 1141878631002546231 and guild_id != 1147262863921135768:
+            if guild_id in self.guild_settings:
                 await self.send_message_to_guild(guild_id, "Your scheduled message here")
             await asyncio.sleep(30)  # Check every minute
 
