@@ -6,7 +6,8 @@ import discord
 import pytz
 import random
 
-from WebScrapper import WebScrapper
+from WebScraper import WebScraper
+
 from Parser import Parser
 
 URLS = [
@@ -16,6 +17,7 @@ URLS = [
 ]
 
 Reading_Message_Thread = False
+ACTIVE_WEB_SCRAP_INSTANCE = False
 
 
 class STATUS(Enum):
@@ -31,14 +33,8 @@ class DATE(Enum):
     Day_Three = 2
 
 
-# Guild_ID: {"channel_name": "general",
-#              "target_time": time(16, 30)},
-#
-#
-#
 url_scrap = "https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt"
-web_scrapper = WebScrapper(url_scrap)
-parser = Parser(web_scrapper.get_lines())
+web_scraper = WebScraper(url_scrap)
 
 
 class AuroraAlert:
@@ -69,8 +65,12 @@ class AuroraAlert:
             'target_time': time(13, 00),
             'role_instance': role,
             'channel_instance': channel,
-            'guild_instance': guild
+            'guild_instance': guild,
+            'kp_index_threshold': 5.00,
+            'parser_instance': None,
         }
+        settings = self.guild_settings[guild.id]
+        settings['parser_instance'] = Parser(settings['kp_index_threshold'], web_scraper.get_lines())
 
     async def on_message(self, message):
         if message.author == self.bot.user:
@@ -78,26 +78,26 @@ class AuroraAlert:
 
         # Check if the message is from a specific guild by comparing guild ID
         global Reading_Message_Thread
+
         if not Reading_Message_Thread:
             if message.content.startswith('$uptime'):
                 Reading_Message_Thread = True
-                await message.channel.send("I'm still working don't worry!")
+                await self.uptime_command(message)
 
             if message.content.startswith('$target_time'):
                 Reading_Message_Thread = True
-                await self.target_time_command(message)
+                # await self.target_time_command(message)
+                # TODO: Implement this
 
             if message.content.startswith('$channel_name'):
                 Reading_Message_Thread = True
-                await self.channel_name_command(message)
+                # await self.channel_name_command(message)
+                # TODO: Implement this
 
             Reading_Message_Thread = False
 
     async def uptime_command(self, message):
-        """
-        :param message:
-        :return:
-        """
+        await message.channel.send("I'm still working don't worry!")
 
     async def target_time_command(self, message):
         guild_id = message.guild.id
@@ -126,10 +126,10 @@ class AuroraAlert:
         settings = self.guild_settings.get(guild_id)
         guild = settings['guild_instance']
         role = settings['role_instance']
-        if guild and await self.message_timer(settings) and len(parser.get_date_time_KP()) > 0:
+        if guild and await self.message_timer(settings) and len(settings['parser_instance'].get_date_time_KP()) > 0:
             msg = f"<@&{role.id}> \n Go see the northern lights on \n"
 
-            for my_tuple in parser.get_date_time_KP():
+            for my_tuple in settings['parser_instance'].get_date_time_KP():
                 my_date, my_time, my_kp = my_tuple
                 msg += f"``{my_date}`` at ``{my_time}``, ``kp-index: {my_kp}`` \n"
 
@@ -141,9 +141,6 @@ class AuroraAlert:
             settings['message_sent'] = True
             await channel.send(embed=embedVar)
             print(f"Sending Alert to {guild.name}")
-            web_scrapper.re_scrap(url_scrap)
-            parser.re_parse(web_scrapper.get_lines())
-            print(f"new data is here!")
 
     def trigger_timer(self, settings):
         # Use EST timezone for 'now'
@@ -159,6 +156,19 @@ class AuroraAlert:
 
         return True
 
+    async def web_scrap_timer(self, settings):
+        global ACTIVE_WEB_SCRAP_INSTANCE
+        if not ACTIVE_WEB_SCRAP_INSTANCE:
+            ACTIVE_WEB_SCRAP_INSTANCE = True
+            web_scraper.re_scrap(url_scrap)
+            await asyncio.sleep(1)
+            ACTIVE_WEB_SCRAP_INSTANCE = False
+
+        kp_threshold_index = settings['kp_index_threshold']
+        settings['parser_instance'].re_parse(kp_threshold_index, web_scraper.get_lines())
+        await asyncio.sleep(86400)
+        print(f"new data is here!")
+
     async def message_timer(self, settings):
         while self.trigger_timer(settings) is False:
             await asyncio.sleep(30)
@@ -171,8 +181,10 @@ class AuroraAlert:
     async def check_scheduled_tasks(self, guild_id):
         while True:
             # and guild_id != 1141878631002546231 and guild_id != 1147262863921135768
-            if guild_id in self.guild_settings and guild_id != 1141878631002546231 and guild_id != 1147262863921135768:
-                await self.send_message_to_guild(guild_id, "Your scheduled message here")
+            if guild_id in self.guild_settings:
+                web_scrap_task = self.web_scrap_timer(self.guild_settings[guild_id])
+                message_task = self.send_message_to_guild(guild_id, "Your scheduled message here")
+                await asyncio.gather(message_task, web_scrap_task)
             await asyncio.sleep(30)  # Check every minute
 
     def start_bot(self):
