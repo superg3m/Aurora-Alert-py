@@ -1,9 +1,5 @@
+import asyncio
 import requests
-
-from TimeConverter import TimeConverter
-
-time_converter = TimeConverter()
-lookup_keys = ["00-03UT", "03-06UT", "06-09UT", "09-12UT", "12-15UT", "15-18UT", "18-21UT", "21-00UT"]
 
 
 class WebScraper:

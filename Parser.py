@@ -70,9 +70,13 @@ class Parser:
                 est_24_hour = TimeConverter.utc_to_est_24(utc_hours[j])
                 if float(KP) >= self.__kp_index_threshold and est_24_hour >= 7 and est_24_hour >= 19:
                     # print(f"24 hour: {est_24_hour}")
-                    self.__date_time_KP.append(
-                        (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
-                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{Fore.RESET} | {time_converter.get_est_format(utc_hours[j])}")
+                    #self.__date_time_KP[self.__report.get('dates')[i]] = (
+                     #   (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
+
+                    self.__date_time_KP.append((self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
+
+                    # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{
+                    # Fore.RESET} | {time_converter.get_est_format(utc_hours[j])}")
                 else:
                     """
                     Yes
