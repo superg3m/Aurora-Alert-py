@@ -26,6 +26,7 @@ Reading_Message_Thread = False
 ACTIVE_WEB_SCRAP_INSTANCE = False
 
 # This will be the in memory cached and it will save to the local database
+# You don't need to sleep at all because the discord polling is efficient
 cachedGuild: list[Guild] = []
 
 class STATUS(Enum):
