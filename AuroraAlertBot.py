@@ -6,6 +6,7 @@ import random
 import threading
 
 from CloudCoverage import CloudCoverage
+from Models.Guild import Guild
 from WebScraper import WebScraper
 from MessageTimer import MessageTimer
 
@@ -24,6 +25,8 @@ URLS = [
 Reading_Message_Thread = False
 ACTIVE_WEB_SCRAP_INSTANCE = False
 
+# This will be the in memory cached and it will save to the local database
+cachedGuild: list[Guild] = []
 
 class STATUS(Enum):
     Idle_Status = -1
