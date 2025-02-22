@@ -1,3 +1,4 @@
+-- Migration Up
 CREATE TABLE IF NOT EXISTS guilds (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -6,4 +7,4 @@ CREATE TABLE IF NOT EXISTS guilds (
     channel_name TEXT NOT NULL,
     kp_index_threshold REAL NOT NULL,
     cloud_coverage_threshold INTEGER NOT NULL
-)
+);

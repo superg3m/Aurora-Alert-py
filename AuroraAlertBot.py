@@ -5,7 +5,7 @@ import discord
 import random
 import threading
 
-from CloudCoverage import CloudCoverage
+from Utility.CloudCoverage import CloudCoverage
 from Models.Guild import Guild
 from WebScraper import WebScraper
 from MessageTimer import MessageTimer
@@ -28,6 +28,7 @@ ACTIVE_WEB_SCRAP_INSTANCE = False
 # This will be the in memory cached and it will save to the local database
 # You don't need to sleep at all because the discord polling is efficient
 cachedGuild: list[Guild] = []
+
 
 class STATUS(Enum):
     Idle_Status = -1
@@ -147,7 +148,7 @@ class AuroraAlert:
         kp_list_length = len(parser_instance.get_date_time_KP())
         # and cloud_coverage.get_cloud_coverage() <= settings.get('cloud_coverage_threshold']
         if (
-              guild_instance and settings.get('message_queued') and kp_list_length > 0
+                guild_instance and settings.get('message_queued') and kp_list_length > 0
         ):
             msg = f"<@&{role_instance.id}> \n Go see the northern lights on \n"
 

@@ -1,16 +1,23 @@
+import os
+
 from dotenv import load_dotenv
-from AuroraAlertBot import AuroraAlert
-import asyncio
+# from AuroraAlertBot import AuroraAlert
 import sqlite3
 
-if __name__ == "__main__":
-    conn = sqlite3.connect('guild.db')
+
+def main():
+    conn = sqlite3.connect('./Database/guild.db')
     cursor = conn.cursor()
 
     load_dotenv()
     bot_token = os.getenv("BOT_TOKEN")
 
-    bot = AuroraAlert(bot_token)
-    bot.start_bot()
-
     conn.close()
+
+    return
+    # bot = AuroraAlert(bot_token)
+    #bot.start_bot()
+
+
+if __name__ == "__main__":
+    main()
