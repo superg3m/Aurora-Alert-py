@@ -1,5 +1,5 @@
 -- StoicMigration Up
-CREATE TABLE IF NOT EXISTS guilds (
+CREATE TABLE IF NOT EXISTS Guild (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     start_time INTEGER NOT NULL,
@@ -10,3 +10,4 @@ CREATE TABLE IF NOT EXISTS guilds (
 );
 
 -- StoicMigration Down
+DROP TABLE IF EXISTS Guild;
