@@ -1,4 +1,4 @@
--- Migration Up
+-- StoicMigration Up
 CREATE TABLE IF NOT EXISTS guilds (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
@@ -8,3 +8,5 @@ CREATE TABLE IF NOT EXISTS guilds (
     kp_index_threshold REAL NOT NULL,
     cloud_coverage_threshold INTEGER NOT NULL
 );
+
+-- StoicMigration Down
