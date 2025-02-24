@@ -9,8 +9,9 @@ class Guild:
         self.channel_name: str = channel_name
         self.kp_index_threshold: float = kp_index_threshold
         self.cloud_coverage_threshold: int = cloud_coverage_threshold
+        self.moon_phase_black_list: str = ""  # Comma separated values
 
-    def save(self, conn):
+    def update(self, conn):
         """Save updated object back to the database."""
         cursor = conn.cursor()
         cursor.execute("""
@@ -21,7 +22,7 @@ class Guild:
         conn.commit()
 
     @staticmethod
-    def get_by_id(conn, guild_id):
+    def from_id(conn, guild_id):
         """Fetch a guild by ID and return as an object."""
         cursor = conn.cursor()
         cursor.execute("""
