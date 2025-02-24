@@ -69,9 +69,6 @@ class AuroraAlert:
         channel = discord.utils.get(guild.channels, name='aurora-alert')
         print(f"Init: {guild.name} | ID: {guild.id}")
         self.guild_settings[guild.id] = {
-            'message_sent': False,
-            'message_queued': False,
-            'schedule_loop': asyncio.create_task(self.check_scheduled_tasks(guild.id)),
             'channel_name': 'aurora-alert',
             'target_time': time(13, 0),
             'role_instance': role,
@@ -89,24 +86,18 @@ class AuroraAlert:
             return
 
         # Check if the message is from a specific guild by comparing guild ID
-        global Reading_Message_Thread
+        if message.content.startswith('$uptime'):
+            await self.uptime_command(message)
 
-        if not Reading_Message_Thread:
-            if message.content.startswith('$uptime'):
-                Reading_Message_Thread = True
-                await self.uptime_command(message)
+        if message.content.startswith('$target_time'):
+            # await self.target_time_command(message)
+            # TODO: Implement this
+            pass
 
-            if message.content.startswith('$target_time'):
-                Reading_Message_Thread = True
-                # await self.target_time_command(message)
-                # TODO: Implement this
-
-            if message.content.startswith('$channel_name'):
-                Reading_Message_Thread = True
-                # await self.channel_name_command(message)
-                # TODO: Implement this
-
-            Reading_Message_Thread = False
+        if message.content.startswith('$channel_name'):
+            # await self.channel_name_command(message)
+            # TODO: Implement this
+            pass
 
     async def uptime_command(self, message):
         await message.channel.send("I'm still working don't worry!")
