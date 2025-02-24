@@ -3,14 +3,17 @@ import re
 from Backend import Utils
 
 
-class NOAA_Data:
-    def __init__(self, day: int, month: str, kp_index: float):
+class NOAA_DayData:
+    def __init__(self, day: int, month: str, kp_indices: list[float]):
         self.day: int = day
         self.month: str = month
-        self.kp_index: float = kp_index
+        self.kp_indices: list[float] = kp_indices
+
+    def __repr__(self):
+        return f"{self.month} | {self.day} | {self.kp_indices}"
 
 
-def noaa_parse() -> NOAA_Data:
+def noaa_parse() -> list[NOAA_DayData]:
     scraped_lines: list[str] = Utils.scrap("https://services.swpc.noaa.gov/text/3-day-forecast.txt")
 
     SEARCH_PHRASE_START = "00-03UT"
@@ -51,9 +54,20 @@ def noaa_parse() -> NOAA_Data:
         kp[three_dates[1]].append(canonical_lines[2])
         kp[three_dates[2]].append(canonical_lines[3])
 
-    print(kp)
+    ret = []
+    for i in range(len(kp)):
+        month_day = three_dates[i].split(" ")
 
-    return NOAA_Data(3, "feb", 2)
+        ret.append(
+            NOAA_DayData(
+                int(month_day[1]),
+                month_day[0],
+                kp[three_dates[i]])
+        )
+
+    print(ret)
+
+    return ret
 
 
 if __name__ == "__main__":

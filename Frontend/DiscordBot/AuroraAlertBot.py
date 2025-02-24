@@ -5,9 +5,10 @@ import discord
 import random
 
 from Backend.APIs.CloudCoverage import CloudCoverage
+from Backend.APIs.NOAA import noaa_parse
 from Backend.Models.Guild import Guild
 
-from Backend.APIs.NOAA.NOAA_Parser import NOAA_Parser
+from Backend.APIs import NOAA
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"
@@ -44,9 +45,6 @@ url_scrap = "https://services.swpc.noaa.gov/text/3-day-forecast.txt"
 #  https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt
 
 cloud_coverage = CloudCoverage()
-web_scraper = WebScraper(url_scrap)
-message_timer = MessageTimer()
-
 blacklisted_guilds = [1141878631002546231, 1147262863921135768]
 
 
@@ -84,7 +82,7 @@ class AuroraAlert:
             'parser_instance': None,
         }
         settings = self.guild_settings.get(guild.id)
-        settings['parser_instance'] = NOAA_Parser(settings.get('kp_index_threshold'), web_scraper.get_lines())
+        settings['parser_instance'] = noaa_parse()
 
     async def on_message(self, message):
         if message.author == self.bot.user:
