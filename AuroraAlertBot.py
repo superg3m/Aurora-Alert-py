@@ -186,25 +186,10 @@ class AuroraAlert:
                 web_scraper.re_scrap(url_scrap)
                 settings['parser_instance'].re_parse(kp_threshold_index, web_scraper.get_lines())
                 settings['message_sent'] = False
-            await asyncio.sleep(30)  # Check every minute
-            timer += 30  # Increment timer by 30 seconds
-
-    def start_timers(self):
-        def message_thread_timer():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-            # Start the event loop for WebScraper
-            asyncio.run(message_timer.start())
-
-        message_thread = threading.Thread(target=message_thread_timer)
-        message_thread.start()
 
     def start_bot(self):
         intents = discord.Intents.all()
         intents.message_content = True  # Make sure this is enabled for on_message to work
-        self.start_timers()
-
         self.bot = discord.Client(intents=intents)
 
         self.bot.event(self.on_ready)
