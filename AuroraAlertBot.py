@@ -7,10 +7,10 @@ import threading
 
 from Utility.CloudCoverage import CloudCoverage
 from Models.Guild import Guild
-from WebScraper import WebScraper
-from MessageTimer import MessageTimer
+from Server.WebScraper import WebScraper
+from Utility.MessageTimer import MessageTimer
 
-from Parser import Parser
+from Utility.Parser import Parser
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"
