@@ -2,6 +2,8 @@ import re
 
 from Backend.TimeConverter import TimeConverter
 
+from Backend import Utils
+
 time_converter = TimeConverter()
 lookup_keys = ["00-03UT", "03-06UT", "06-09UT", "09-12UT", "12-15UT", "15-18UT", "18-21UT", "21-00UT"]
 utc_hours = [0, 3, 6, 9, 12, 15, 18, 21]
@@ -19,27 +21,16 @@ def remove_inside_and_parentheses(input_string):
 
 
 class Parser:
-    def __init__(self, kp_index_threshold, lines):
-        self.__lines = lines
+    def __init__(self, kp_index_threshold):
+        self.__lines = []
         self.__data_range = []
         self.__date_time_KP = []
-
-        self.__parse_dates()
-
         self.__kp_index_threshold = kp_index_threshold
 
-        self.__report = {
-            "dates": [self.__data_range[0], self.__data_range[1], self.__data_range[2]],
-            "KP": [[], [], []]
-        }
+        self.__report = {}
 
-        self.__parse_report()
-        self.__calculate_report()
-
-
-
-    def re_parse(self, kp_thresh_hold, lines):
-        self.__lines = lines
+    def parse(self, kp_thresh_hold, url):
+        self.__lines = Utils.scrap(url)
         self.__data_range = []
         self.__date_time_KP = []
 
@@ -54,6 +45,8 @@ class Parser:
 
         self.__parse_report()
         self.__calculate_report()
+
+        # RETURN JSON HERE or like KP data
 
     def find_best_time_per_day(self):
         best = {self.__data_range[0]: [],
@@ -71,10 +64,11 @@ class Parser:
                 est_24_hour = TimeConverter.utc_to_est_24(utc_hours[j])
                 if float(KP) >= self.__kp_index_threshold and est_24_hour >= 7 and est_24_hour >= 19:
                     # print(f"24 hour: {est_24_hour}")
-                    #self.__date_time_KP[self.__report.get('dates')[i]] = (
-                     #   (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
+                    # self.__date_time_KP[self.__report.get('dates')[i]] = (
+                    #   (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
 
-                    self.__date_time_KP.append((self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
+                    self.__date_time_KP.append(
+                        (self.__report.get('dates')[i], time_converter.get_est_format(utc_hours[j]), float(KP)))
 
                     # print(f"Report# {j + 1} | Date: {self.__report.get('dates')[i]} | {Fore.RED}KP: {KP}{
                     # Fore.RESET} | {time_converter.get_est_format(utc_hours[j])}")

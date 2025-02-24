@@ -9,7 +9,7 @@ from Backend.Models.Guild import Guild
 from Backend.WebScrapper import WebScraper
 from Backend.MessageTimer import MessageTimer
 
-from Backend.APIs.Parser import NOAA_Parser
+from Backend.APIs.NOAA.Parser import NOAA_Parser
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"
@@ -167,6 +167,14 @@ class AuroraAlert:
             await channel.send(embed=embedVar)
             print(f"Sending Alert to {guild_instance.name}")
 
+    async def on_member_join(self, member):
+        guild = member.guild  # Access the guild object of the server the member joined
+        guild_name = guild.name  # Get the guild name
+        guild_id = guild.id  # Get the guild ID
+
+
+        print(f"New member '{member.name}' joined server '{guild_name}' (ID: {guild_id})")
+
     async def check_scheduled_tasks(self, guild_id):
         timer = 0
         reparse_interval = 86400  # 24 hours in seconds\
@@ -194,5 +202,6 @@ class AuroraAlert:
 
         self.bot.event(self.on_ready)
         self.bot.event(self.on_message)
+        self.bot.event(self.on_member_join)
 
         self.bot.run(self.bot_token)
