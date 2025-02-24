@@ -25,7 +25,9 @@ ACTIVE_WEB_SCRAP_INSTANCE = False
 
 # This will be the in memory cached and it will save to the local database
 # You don't need to sleep at all because the discord polling is efficient
-cachedGuild: list[Guild] = []
+cachedGuild: dict[int, list[Guild]] = {
+
+}
 
 
 class STATUS(Enum):
@@ -49,20 +51,21 @@ blacklisted_guilds = [1141878631002546231, 1147262863921135768]
 
 
 class AuroraAlert:
-    def __init__(self, bot_token):
+    def __init__(self, bot_token, db_conn):
         self.bot_token = bot_token
         self.bot = None
-        self.guild_settings = {
-
-            # Add more guild settings here
-        }
+        self.db_conn = db_conn
 
     async def on_ready(self):
         print(f'Logged in as {self.bot.user.name}')
 
+        guilds = Guild.get_all_guilds_data()
+
         for guild in self.bot.guilds:
-            if guild.id not in self.guild_settings:
-                self.init_guild_settings(guild)
+            if guilds.id in blacklisted_guilds:
+                continue
+
+            cachedGuild[guilds.id] = guild
 
     def init_guild_settings(self, guild):
         role = discord.utils.get(guild.roles, name="Aurora Alerts")
@@ -158,7 +161,6 @@ class AuroraAlert:
         guild = member.guild  # Access the guild object of the server the member joined
         guild_name = guild.name  # Get the guild name
         guild_id = guild.id  # Get the guild ID
-
 
         print(f"New member '{member.name}' joined server '{guild_name}' (ID: {guild_id})")
 

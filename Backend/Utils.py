@@ -42,3 +42,9 @@ def format_24hr_to_12hr(_24_hr_time) -> str:
         return f"{_24_hr_time}:00am"
     else:
         return f"{_24_hr_time - 12}:00pm"
+
+
+seconds_epsilon = 120
+
+def days_to_seconds(days):
+    return days * 86400
