@@ -6,10 +6,8 @@ import random
 
 from Backend.APIs.CloudCoverage import CloudCoverage
 from Backend.Models.Guild import Guild
-from Backend.WebScrapper import WebScraper
-from Backend.MessageTimer import MessageTimer
 
-from Backend.APIs.NOAA.Parser import NOAA_Parser
+from Backend.APIs.NOAA.NOAA_Parser import NOAA_Parser
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"
