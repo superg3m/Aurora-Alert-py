@@ -13,7 +13,7 @@ def days_to_seconds(days):
 
 
 def main():
-    conn = sqlite3.connect('Database/AuroraAlert.db')
+    conn = sqlite3.connect('Backend/Database/AuroraAlert.db')
     cursor = conn.cursor()
 
     load_dotenv()

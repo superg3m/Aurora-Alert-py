@@ -3,14 +3,13 @@ from datetime import time
 import asyncio
 import discord
 import random
-import threading
 
-from Utility.CloudCoverage import CloudCoverage
-from Models.Guild import Guild
-from Server.WebScraper import WebScraper
-from Utility.MessageTimer import MessageTimer
+from Backend.APIs.CloudCoverage import CloudCoverage
+from Backend.Models.Guild import Guild
+from Backend.WebScrapper import WebScraper
+from Backend.MessageTimer import MessageTimer
 
-from Utility.Parser import Parser
+from Backend.APIs.Parser import NOAA_Parser
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"
@@ -43,7 +42,8 @@ class DATE(Enum):
     Day_Three = 2
 
 
-url_scrap = "https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt"
+url_scrap = "https://services.swpc.noaa.gov/text/3-day-forecast.txt"
+#  https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt
 
 cloud_coverage = CloudCoverage()
 web_scraper = WebScraper(url_scrap)
@@ -86,7 +86,7 @@ class AuroraAlert:
             'parser_instance': None,
         }
         settings = self.guild_settings.get(guild.id)
-        settings['parser_instance'] = Parser(settings.get('kp_index_threshold'), web_scraper.get_lines())
+        settings['parser_instance'] = NOAA_Parser(settings.get('kp_index_threshold'), web_scraper.get_lines())
 
     async def on_message(self, message):
         if message.author == self.bot.user:

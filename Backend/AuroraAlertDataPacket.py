@@ -1,4 +1,4 @@
-class AuroraAlertMessage:
+class AuroraAlertDataPacket:
     def __init__(self, kp_index):
         self.kp_index = kp_index
         self.start_time = None

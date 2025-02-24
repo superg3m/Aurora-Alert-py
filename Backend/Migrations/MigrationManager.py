@@ -45,7 +45,7 @@ def getMigrationsFromFile(migration_file, mode) -> list[str]:
 
 
 if __name__ == "__main__":
-    DIR: str = "../Migrations"
+    DIR: str = ""
     EXTENSION: str = ".sql"
 
     if len(sys.argv) != 2 or sys.argv[1] not in ["up", "down"]:
