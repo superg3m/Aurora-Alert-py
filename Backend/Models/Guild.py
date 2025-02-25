@@ -1,7 +1,8 @@
 # 'target_time': time(13, 0),
+from Backend.Models._ModelBase import ModelBase
 
 
-class GuildModel:
+class GuildModel(ModelBase):
     def __init__(self):
         self.id: int = 0
         self.name: str = ""
@@ -61,7 +62,9 @@ class GuildModel:
         return ret
 
     def create(self, conn):
+        self.create()
         cursor = conn.cursor()
+
         cursor.execute("""
             INSERT INTO guilds (name, start_time, end_time, channel_name, kp_index_threshold, cloud_coverage_threshold) 
             VALUES (?, ?, ?, ?, ?, ?, ?)

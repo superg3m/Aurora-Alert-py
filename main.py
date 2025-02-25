@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-# from AuroraAlertBot import AuroraAlert
 import sqlite3
 import time
 
