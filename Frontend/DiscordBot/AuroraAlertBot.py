@@ -6,7 +6,7 @@ import random
 
 from Backend.APIs.CloudCoverage import CloudCoverage
 from Backend.APIs.NOAA import noaa_parse
-from Backend.Models.Guild import Guild
+from Backend.Models.DiscordServer import DiscordServer
 
 from Backend.APIs import NOAA
 

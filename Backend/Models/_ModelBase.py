@@ -1,15 +1,36 @@
+import sqlite3
+
+
 class ModelBase:
-    def create(self):
+    def create(self, conn):
         # Extract instance attributes dynamically (excluding private/protected ones)
-        print(self.__dict__.items())
-        attributes = {key: value for key, value in self.__dict__.items() if not key.startswith("_")}
+        members = {key: value for key, value in self.__dict__.items() if
+                   not key.startswith("_") and not key.startswith("id")}
 
-        set_clause = ", ".join(f"{col} = ?" for col in attributes.keys() if col != "id")
-        values = tuple(attributes[col] for col in attributes.keys() if col != "id")
+        placeholders = []
+        for key in members.keys():
+            placeholders.append(f"{key} = ?")
 
-        sql = f"UPDATE {self.__class__.__name__.lower()}s SET {set_clause} WHERE id = ?"
+        keys_implode = ", ".join(members.keys())
 
-        print(sql)
+        values = []
+        for key in members.keys():
+            if isinstance(members[key], str):
+                values.append(f"\"{members[key]}\"")
+            else:
+                values.append(str(members[key]))
+
+        values_implode = ", ".join(values)
+
+        sql = f"INSERT INTO {self.__class__.__name__} ({keys_implode}) VALUES ({values_implode});"
+        cursor = conn.cursor()
+
+        cursor.execute(sql)
+
+        if self.__dict__.get("id") is not None:
+            self.id = cursor.lastrowid
+
+        conn.commit()
 
     def read(self, conn):
         pass

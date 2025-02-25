@@ -1,27 +1,21 @@
 # 'target_time': time(13, 0),
+import sqlite3
+
 from Backend.Models._ModelBase import ModelBase
 
 
-class GuildModel(ModelBase):
+class DiscordServer(ModelBase):
     def __init__(self):
+
         self.id: int = 0
-        self.name: str = ""
+        self.name: str = "TESINGS"
         self.start_time: int = 14  # 24-hour format
         self.end_time: int = 21
         self.channel_name: str = "aurora-alert"
-        self.kp_index_threshold: float = 4.67
-        self.cloud_coverage_threshold: int = 35
         self.time_zone = "EST"
-        self.moon_phase_blacklist: str = "Full Moon,Waxing Gibbous,Waning Gibbous"  # Comma separated values
-
-    def update(self, conn):
-        cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE guilds 
-            SET name = ?, start_time = ?, end_time = ?, channel_name = ?, kp_index_threshold = ?, cloud_coverage_threshold = ? 
-            WHERE id = ?
-        """, (self.__dict__.values()))
-        conn.commit()
+        self.kp_index_threshold: float = 4.67
+        self.cloud_coverage_percentage_threshold: int = 35
+        self.moon_phase_blacklist: str = "Full Moon,Waxing Gibbous,Waning Gibbous"  # comma separated values
 
     @staticmethod
     def from_id(conn, guild_id):
@@ -33,7 +27,7 @@ class GuildModel(ModelBase):
 
         row = cursor.fetchone()
         if row:
-            guild = GuildModel()
+            guild = DiscordServer()
             (
                 guild.id, guild.name, guild.start_time, guild.end_time,
                 guild.channel_name, guild.kp_index_threshold, guild.cloud_coverage_threshold
@@ -51,7 +45,7 @@ class GuildModel(ModelBase):
 
         ret = []
         for row in cursor:
-            guild = GuildModel()
+            guild = DiscordServer()
             (
                 guild.id, guild.name, guild.start_time, guild.end_time,
                 guild.channel_name, guild.kp_index_threshold, guild.cloud_coverage_threshold
@@ -61,22 +55,15 @@ class GuildModel(ModelBase):
 
         return ret
 
-    def create(self, conn):
-        self.create()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT INTO guilds (name, start_time, end_time, channel_name, kp_index_threshold, cloud_coverage_threshold) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (*self.__dict__.values(),))
-        conn.commit()
-
-        guild = GuildModel()
-        guild.id = cursor.lastrowid
-
-        return guild
-
 
 if __name__ == "__main__":
-    a = GuildModel()
-    print(*a.__dict__.values())
+    try:
+        conn = sqlite3.connect('../Database/AuroraAlert.db')
+
+        a = DiscordServer()
+        a.create(conn)
+
+        conn.close()
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")

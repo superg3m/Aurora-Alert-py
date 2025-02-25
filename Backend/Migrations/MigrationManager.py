@@ -45,7 +45,7 @@ def getMigrationsFromFile(migration_file, mode) -> list[str]:
 
 
 if __name__ == "__main__":
-    DIR: str = ""
+    DIR: str = "./Backend/Migrations"
     EXTENSION: str = ".sql"
 
     if len(sys.argv) != 2 or sys.argv[1] not in ["up", "down"]:
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         exit(-1)
 
     migration_mode = sys.argv[1]
-    conn = sqlite3.connect('../Database/AuroraAlert.db')
+    conn = sqlite3.connect('./Backend/Database/AuroraAlert.db')
     cursor = conn.cursor()
 
     files = get_files_by_extension(DIR, EXTENSION)
