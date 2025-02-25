@@ -13,15 +13,6 @@ class GuildModel:
         self.time_zone = "EST"
         self.moon_phase_blacklist: str = "Full Moon,Waxing Gibbous,Waning Gibbous"  # Comma separated values
 
-    def __getitem__(self, x):
-        return self.__dict__[x]
-
-    def __iter__(self):
-        return iter(self.__dict__)
-
-    def __len__(self):
-        return len(self.__dict__)
-
     def update(self, conn):
         cursor = conn.cursor()
         cursor.execute("""
