@@ -1,8 +1,10 @@
 import asyncio
 import datetime
-
 import pytz
 
+
+# This is pretty much all garbage prob just want a thread
+# and then do some type of atomic set that the other thread can see
 
 class MessageTimer:
     def __init__(self):
@@ -14,10 +16,7 @@ class MessageTimer:
         # Set the Eastern Time Zone (EST)
         est_timezone = pytz.timezone('US/Eastern')
 
-        # Get the current datetime in the EST time zone
         now = datetime.datetime.now(est_timezone)
-
-        # Adjust the target time to EST (change to your target time)
         target_time = est_timezone.localize(
             datetime.datetime(now.year, now.month, now.day, 12, 0))  # Adjust to your target time
 

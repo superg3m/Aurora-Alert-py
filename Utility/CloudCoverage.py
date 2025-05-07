@@ -34,7 +34,6 @@ class CloudCoverage:
         cloud_coverages = {}
 
         for day in next_three_days:
-            # Determine the date of the current day
             current_date = day.strftime('%Y-%m-%d')
 
             TIME_ZONE = pytz.timezone('US/Eastern')
