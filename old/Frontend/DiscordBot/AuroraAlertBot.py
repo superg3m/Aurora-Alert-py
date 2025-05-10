@@ -1,14 +1,11 @@
 from enum import Enum
 from datetime import time
-import asyncio
 import discord
 import random
 
-from Backend.APIs.CloudCoverage import CloudCoverage
-from Backend.APIs.NOAA import noaa_parse
-from Backend.Models.Guild import Guild
-
-from Backend.APIs import NOAA
+from old.Backend.APIs.CloudCoverage import CloudCoverage
+from old.Backend.APIs.NOAA import noaa_parse
+from old.Backend.Models.Guild import Guild
 
 URLS = [
     "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?ixlib=rb-4.0.3&ixid"

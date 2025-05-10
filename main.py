@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 import sqlite3
 import time
 
-from Frontend.DiscordBot.AuroraAlertBot import AuroraAlert
+from old.Frontend.DiscordBot.AuroraAlertBot import AuroraAlert
 
 
 def main():
-    conn = sqlite3.connect('Backend/Database/AuroraAlert.db')
+    conn = sqlite3.connect('old/Backend/Database/AuroraAlert.db')
 
     load_dotenv()
     bot_token = os.getenv("BOT_TOKEN")
@@ -18,8 +18,8 @@ def main():
 
     conn.close()
 
-    bot = AuroraAlert(bot_token, conn)
-    bot.start_bot()
+    bot = AuroraAlert(conn)
+    bot.start_bot(bot_token)
 
 
 if __name__ == "__main__":
