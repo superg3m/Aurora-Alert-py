@@ -1,4 +1,4 @@
-class Guild:
+class GuildConfig:
     def __init__(self, guild_id, name: str, start_time=14, end_time=21, channel_name="aurora-alert", kp_index_threshold=4.67, cloud_coverage_threshold=35):
         self.id: int = guild_id
         self.name: str = name
@@ -18,7 +18,7 @@ class Guild:
         """, (name, start_time, end_time, channel_name, kp_index_threshold, cloud_coverage_threshold))
         conn.commit()
         cursor.close()
-        return Guild(cursor.lastrowid, name, start_time, end_time, channel_name, kp_index_threshold,
+        return GuildConfig(cursor.lastrowid, name, start_time, end_time, channel_name, kp_index_threshold,
                      cloud_coverage_threshold)
 
     def update(self, conn):
@@ -32,13 +32,13 @@ class Guild:
         cursor.close()
 
     @staticmethod
-    def get_all_guild_data(conn):
+    def load_all(conn):
         cursor = conn.cursor()
         cursor.execute("""SELECT * FROM Guild""")
 
-        ret = []
+        ret: dict[int, GuildConfig] = {}
         for row in cursor:
-            guild = Guild(
+            ret[row[0]] = GuildConfig(
                 row[0],
                 name=row[1],
                 start_time=row[2],
@@ -47,7 +47,6 @@ class Guild:
                 kp_index_threshold=row[5],
                 cloud_coverage_threshold=row[6]
             )
-            ret.append(guild)
 
         cursor.close()
         return ret
@@ -62,8 +61,5 @@ class Guild:
         row = cursor.fetchone()
         cursor.close()
         if row:
-            return Guild(*row)
+            return GuildConfig(*row)
         return None
-
-    get_cloud_coverage()
-
