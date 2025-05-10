@@ -6,7 +6,7 @@ import random
 
 from Backend.APIs.CloudCoverage import CloudCoverage
 from Backend.APIs.NOAA import noaa_parse
-from Backend.Models.DiscordServer import DiscordServer
+from Backend.Models.Guild import Guild
 
 from Backend.APIs import NOAA
 
@@ -51,15 +51,14 @@ blacklisted_guilds = [1141878631002546231, 1147262863921135768]
 
 
 class AuroraAlert:
-    def __init__(self, bot_token, db_conn):
-        self.bot_token = bot_token
+    def __init__(self, db_conn):
         self.bot = None
         self.db_conn = db_conn
 
     async def on_ready(self):
         print(f'Logged in as {self.bot.user.name}')
 
-        guilds = Guild.get_all_guilds_data()
+        guilds = Guild.get_all_guild_data(self.db_conn)
 
         for guild in self.bot.guilds:
             if guilds.id in blacklisted_guilds:
@@ -184,7 +183,7 @@ class AuroraAlert:
                 settings['parser_instance'].re_parse(kp_threshold_index, web_scraper.get_lines())
                 settings['message_sent'] = False
 
-    def start_bot(self):
+    def start_bot(self, bot_token):
         intents = discord.Intents.all()
         intents.message_content = True  # Make sure this is enabled for on_message to work
         self.bot = discord.Client(intents=intents)
@@ -193,4 +192,4 @@ class AuroraAlert:
         self.bot.event(self.on_message)
         self.bot.event(self.on_member_join)
 
-        self.bot.run(self.bot_token)
+        self.bot.run(bot_token)
