@@ -15,10 +15,32 @@ class AuroraAlert:
         self.guild_conditions: dict[int, asyncio.Condition] = {}
         self.guild_tasks: dict[int, asyncio.Task] = {}
 
-    async def guild_coroutine(self):
-        # check for db updates
-        # re-get all api data
-        pass
+
+    # TODO(Jovanni): rethink this?
+    async def guild_coroutine_should_send_message(self, guild_id) -> bool:
+        seconds_to_sleep = 0
+        while True:
+
+
+
+            if time_to_send_message:
+                return True
+
+            await asyncio.sleep(seconds_to_sleep)
+
+    async def guild_coroutine(self, guild_id):
+
+
+        condition: asyncio.Condition = self.guild_conditions[guild_id]
+        while True:
+            await condition.acquire()
+            try:
+                # check for db updates
+                # re-get all api data
+                await condition.wait_for(self.guild_coroutine_should_send_message(guild_id))
+                # check if message should send
+            finally:
+                condition.release()
 
     async def on_ready(self):
         print(f'Logged in as {self.bot.user.name}')
@@ -52,13 +74,9 @@ class AuroraAlert:
         if guild.id not in self.guild_configurations:
             self.guild_configurations[guild.id] = GuildConfig(guild.id, guild.name)
 
-        self.guild_tasks[guild.id] = asyncio.create_task(self.guild_coroutine())
+        self.guild_tasks[guild.id] = asyncio.create_task(self.guild_coroutine(guild.id))
 
-    async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
-        if before.name != after.name:
-            guild_config = self.guild_configurations[before.id]
-            guild_config.name = after.name
-            guild_config.update(self.db_connection)
+
 
     def start_bot(self, bot_token):
         intents = discord.Intents.all()
@@ -71,6 +89,7 @@ class AuroraAlert:
         self.bot.event(self.on_message)
         self.bot.event(self.on_guild_join)
         self.bot.event(self.on_guild_update)
+        self.bot.event(self.on_guild_remove)
 
         self.bot.run(bot_token)
 
