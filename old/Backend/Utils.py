@@ -45,6 +45,3 @@ def format_24hr_to_12hr(_24_hr_time) -> str:
 
 
 seconds_epsilon = 120
-
-def days_to_seconds(days):
-    return days * 86400

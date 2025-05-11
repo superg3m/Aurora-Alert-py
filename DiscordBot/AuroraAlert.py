@@ -4,6 +4,8 @@ import discord
 from discord.ext.commands import bot
 
 from Backend.Models.Guild import GuildConfig
+from old.Backend.Utils import days_to_seconds
+from old.Frontend.DiscordBot.AuroraAlertBot import cloud_coverage
 
 blacklisted_guild_ids = [1141878631002546231, 1147262863921135768]
 
@@ -15,30 +17,19 @@ class AuroraAlert:
         self.guild_conditions: dict[int, asyncio.Condition] = {}
         self.guild_tasks: dict[int, asyncio.Task] = {}
 
-
-    # TODO(Jovanni): rethink this?
-    async def guild_coroutine_should_send_message(self, guild_id) -> bool:
-        seconds_to_sleep = 0
-        while True:
-
-
-
-            if time_to_send_message:
-                return True
-
-            await asyncio.sleep(seconds_to_sleep)
-
     async def guild_coroutine(self, guild_id):
-
-
         condition: asyncio.Condition = self.guild_conditions[guild_id]
         while True:
             await condition.acquire()
             try:
-                # check for db updates
+                cloud_coverage()
+                moon_phase()
                 # re-get all api data
-                await condition.wait_for(self.guild_coroutine_should_send_message(guild_id))
                 # check if message should send
+
+                if time_to_send_message:
+                    pass
+                await asyncio.sleep(86400)
             finally:
                 condition.release()
 
