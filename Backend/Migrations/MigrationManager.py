@@ -6,11 +6,9 @@ import sys
 STOIC_MIGRATION_UP_STR = "-- StoicMigration Up\n"
 STOIC_MIGRATION_DOWN_STR = "-- StoicMigration Down\n"
 
-
 def get_files_by_extension(directory, extension) -> list[str]:
     pattern = os.path.join(directory, f"*{extension}")
     return glob.glob(pattern)
-
 
 def getMigrationsFromFile(migration_file, mode) -> list[str]:
     ret_migrations: list[str] = []
