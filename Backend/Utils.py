@@ -1,6 +1,5 @@
 import time
 import requests
-from datetime import datetime
 
 us_time_zone_offsets = {
     "UTC": 0,

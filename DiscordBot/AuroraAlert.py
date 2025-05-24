@@ -1,11 +1,7 @@
 import asyncio
-
 import discord
-from discord.ext.commands import bot
 
 from Backend.Models.Guild import GuildConfig
-from old.Backend.Utils import days_to_seconds
-from old.Frontend.DiscordBot.AuroraAlertBot import cloud_coverage
 
 blacklisted_guild_ids = [1141878631002546231, 1147262863921135768]
 
@@ -22,13 +18,13 @@ class AuroraAlert:
         while True:
             await condition.acquire()
             try:
-                cloud_coverage()
-                moon_phase()
+                #cloud_coverage()
+                #moon_phase()
                 # re-get all api data
                 # check if message should send
 
-                if time_to_send_message:
-                    pass
+                #if time_to_send_message:
+                #    pass
                 await asyncio.sleep(86400)
             finally:
                 condition.release()
@@ -77,7 +73,6 @@ class AuroraAlert:
         self.bot = discord.Client(intents=intents)
 
         self.bot.event(self.on_ready)
-        self.bot.event(self.on_message)
         self.bot.event(self.on_guild_join)
         self.bot.event(self.on_guild_update)
         self.bot.event(self.on_guild_remove)

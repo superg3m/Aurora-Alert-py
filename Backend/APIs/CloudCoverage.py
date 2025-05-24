@@ -1,24 +1,33 @@
+import json
+import os
+
 import pytz
 import requests
 import datetime
 
+from dotenv import load_dotenv
 
-class CloudCoverage:
+
+class WeatherAPI:
     def __init__(self):
-        self.api_key = "391c28fa1bffe5bac10ae9e07d85f9e7"
-        self.base_url = "http://api.openweathermap.org/data/2.5/forecast?"
+        self.api_key = os.getenv("OPEN_WEATHER_API")
+        self.base_url = "https://api.openweathermap.org/data/2.5/weather"
         self.city = "Houghton, US"
 
-    def get_cloud_coverage(self):
-        url = f"{self.base_url}q={self.city}&appid={self.api_key}"
+    def get_visibility_percentage(self):
+        url = f"{self.base_url}?q={self.city}&appid={self.api_key}&units=imperial"
+        print(url)
         response = requests.get(url)
-
         if response.status_code == 200:
             data = response.json()
-            print(f"cloud coverage {data['clouds']['all']}%")
-            return data['clouds']['all']
+            json_str = json.dumps(data, indent=4)
+            print(json_str)
+
+            max_visibility_in_meters = 10_000
+
+            return data["visibility"] / max_visibility_in_meters
         else:
-            print("Erorr when fetching the weather data")
+            print("Error when fetching the weather data")
 
     def get_cloud_coverage_for_next_3_days(self):
         latitude = 47.1211
@@ -38,7 +47,6 @@ class CloudCoverage:
             is_dst = current_time_est.dst()
             time_zone_offset = 3600 * -(4 + int(is_dst.seconds / 3600))
 
-
             url = f"{self.base_url}lat={latitude}&lon={longitude}&appid={self.api_key}&timezone={time_zone_offset}"
 
             response = requests.get(url)
@@ -50,7 +58,6 @@ class CloudCoverage:
 
                 formatted_date = day.strftime('%b %d')
                 cloud_coverages[formatted_date] = f"{cloud_coverage}%"
-
             else:
                 print(f"Error fetching weather data for {current_date}")
 
@@ -58,5 +65,6 @@ class CloudCoverage:
 
 
 if __name__ == "__main__":
-    cloud = CloudCoverage()
-    print(cloud.get_cloud_coverage_for_next_3_days())
+    load_dotenv()
+    cloud = WeatherAPI()
+    print(cloud.get_visibility_percentage())
