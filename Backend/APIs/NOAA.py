@@ -1,6 +1,6 @@
 import re
 
-from old.Backend import Utils
+from Backend import Utils
 
 
 class NOAA_DayData:
@@ -14,7 +14,7 @@ class NOAA_DayData:
 
 
 def noaa_parse() -> list[NOAA_DayData]:
-    scraped_lines: list[str] = Utils.scrap("https://services.swpc.noaa.gov/text/3-day-forecast.txt")
+    scraped_lines: list[str] = Utils.scrape("https://services.swpc.noaa.gov/text/3-day-forecast.txt")
 
     SEARCH_PHRASE_START = "00-03UT"
     SEARCH_PHRASE_END = "21-00UT"

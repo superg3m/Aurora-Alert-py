@@ -2,6 +2,7 @@ import asyncio
 import discord
 
 from Backend.Models.Guild import GuildConfig
+from ServerLogger import logger
 
 blacklisted_guild_ids = [1141878631002546231, 1147262863921135768]
 
@@ -30,8 +31,6 @@ class AuroraAlert:
                 condition.release()
 
     async def on_ready(self):
-        print(f'Logged in as {self.bot.user.name}')
-
         self.guild_configurations = GuildConfig.load_all(self.db_connection)
 
         for guild in self.bot.guilds:
@@ -41,7 +40,7 @@ class AuroraAlert:
             self.init_guild(guild)
 
     async def on_guild_join(self, guild):
-        print(f"Bot joined a new guild: {guild.name} (ID: {guild.id})")
+        logger.info(f"Bot joined a new guild: {guild.name} (ID: {guild.id})")
         self.init_guild(guild)
 
     async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
